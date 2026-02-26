@@ -1,178 +1,293 @@
-<p align="center">
-  <img src="assets/banner.svg" alt="CNN Accelerator Banner"/>
-</p>
-📌 Overview
+Overview
 
-This project implements a fully parameterized, vendor-agnostic CNN accelerator IP core designed for FPGA-based Edge AI inference.
+Quantized CNN Accelerator IP for Edge AI is an open-source, vendor-agnostic FPGA IP core implementing a fully parameterized INT8 convolutional neural network accelerator.
 
-The accelerator supports INT8 quantized 3×3 convolution optimized for 128×128 image processing using a pipelined MAC architecture.
+The design targets real-time edge inference for 128×128 image inputs and is optimized for:
 
-The goal is to provide a reusable, open-source hardware IP block that can be integrated into any FPGA platform without vendor lock-in.
+Deterministic throughput (1 pixel per clock)
 
-🎯 Project Objectives
+Fully pipelined streaming architecture
 
-Develop reusable RTL for quantized convolution
+On-chip memory reuse
 
-Support 128×128 real-time inference
+Low external memory bandwidth
 
-Achieve 1 pixel per clock throughput
+FPGA portability across vendors
 
-Maintain vendor independence
+The IP is written in synthesizable Verilog and designed for integration into embedded FPGA SoCs or discrete FPGA platforms.
 
-Use open-source FPGA toolchains
+Project Objectives
 
-Publish performance benchmarks
+Provide a reusable INT8 CNN accelerator IP core
 
-Maintain active weekly development logs
+Achieve 1 pixel per clock streaming throughput
 
-🚧 Development Status
+Support 128×128 image processing in real time
 
-Phase: Active Development
-Timeline: 1 Month Structured Roadmap
-Update Frequency: Weekly
+Enable parameterized scaling (kernel size, channels, depth)
 
-🏗 Architecture Overview
+Maintain vendor-neutral synthesis compatibility
 
-Input Stream
-→ Line Buffer (BRAM)
-→ Sliding Window Generator
-→ 3×3 Parallel MAC Array
-→ Accumulator (INT32)
-→ ReLU Activation
-→ Output Stream
+Support open-source FPGA toolchains
 
-Fully pipelined for maximum throughput.
+Facilitate FOSS hardware incubation
 
-⚙ Target Configuration
-parameter DATA_WIDTH     = 8;
-parameter WEIGHT_WIDTH   = 8;
-parameter ACC_WIDTH      = 32;
+Architecture
 
-parameter IMG_WIDTH      = 128;
-parameter IMG_HEIGHT     = 128;
+The accelerator follows a streaming, fully pipelined architecture with line-buffer-based convolution.
 
-parameter KERNEL_SIZE    = 3;
-parameter STRIDE         = 1;
-parameter PADDING        = 1;
+Text-Based Block Diagram
+                +----------------------+
+AXI-Stream In ->| Input Buffer         |
+                +----------+-----------+
+                           |
+                           v
+                +----------------------+
+                | Line Buffers         |
+                | (Sliding Window)     |
+                +----------+-----------+
+                           |
+                           v
+                +----------------------+
+                | MAC Array (INT8xINT8)|
+                | Parallel PE Units    |
+                +----------+-----------+
+                           |
+                           v
+                +----------------------+
+                | Accumulator (INT32)  |
+                +----------+-----------+
+                           |
+                           v
+                +----------------------+
+                | ReLU / Activation    |
+                +----------+-----------+
+                           |
+                           v
+                +----------------------+
+                | Quantizer (INT8)     |
+                +----------+-----------+
+                           |
+                           v
+AXI-Stream Out <-+----------------------+
+                 | Output Buffer        |
+                 +----------------------+
+Configuration
 
-parameter IN_CHANNELS    = 1;
-parameter OUT_CHANNELS   = 4;
+The accelerator is fully parameterized.
 
-parameter MAC_UNITS      = 9;
-🧮 Data Precision
-Component	Precision
-Input Feature Map	INT8
-Weights	INT8
-Accumulator	INT32
-Output	INT8 (Scaled)
-📊 Performance Target
+Example Verilog Parameter Configuration
+module cnn_accelerator #(
+    parameter IMG_WIDTH      = 128,
+    parameter IMG_HEIGHT     = 128,
+    parameter DATA_WIDTH     = 8,     // INT8
+    parameter ACC_WIDTH      = 32,    // INT32 accumulation
+    parameter KERNEL_SIZE    = 3,
+    parameter IN_CHANNELS    = 8,
+    parameter OUT_CHANNELS   = 16,
+    parameter PE_COUNT       = 16
+)(
+    input  wire clk,
+    input  wire rst_n,
+    input  wire [DATA_WIDTH-1:0] s_axis_tdata,
+    input  wire s_axis_tvalid,
+    output wire s_axis_tready,
+    output wire [DATA_WIDTH-1:0] m_axis_tdata,
+    output wire m_axis_tvalid,
+    input  wire m_axis_tready
+);
+Data Precision
+Stage	Precision	Description
+Input Feature	INT8	Quantized activation
+Weights	INT8	Signed 8-bit
+MAC Operation	INT8×INT8	Parallel multiply
+Accumulation	INT32	Prevent overflow
+Activation	INT8	ReLU + scaling
+Output Feature	INT8	Re-quantized output
+Performance Targets
+
+Target configuration example:
+
+Parameter	Value
+Image Size	128 × 128
+Throughput	1 pixel/clock
+Clock Frequency	100 MHz
+Latency	Pipeline dependent
+Data Precision	INT8
+Example Throughput Calculation
 
 128 × 128 = 16,384 pixels
 
-At 100 MHz:
+1 pixel per clock
 
-16,384 cycles ≈ 163.84 µs per output channel
+100 MHz clock
 
-Expected Speedup vs CPU: 20× – 200×
+Processing time per frame:
 
-💾 Memory Architecture
+16,384 cycles / 100 MHz = 163.84 µs per frame
 
-BRAM-based Line Buffers
+This enables real-time edge inference with substantial headroom for multi-layer CNN execution.
 
-Sliding Window Generator
+Memory Architecture
 
-BRAM Weight Storage
+The design minimizes external memory access through on-chip reuse:
 
-Streaming Output Mode
+Line buffers implemented using BRAM
 
-🔌 Interface
-input clk;
-input rst;
+Weight storage in dual-port BRAM
 
-input input_valid;
-input [DATA_WIDTH-1:0] input_data;
+Partial sum registers for local accumulation
 
-output output_valid;
-output [DATA_WIDTH-1:0] output_data;
+Optional external DRAM interface for deep networks
 
-Future:
+Memory Strategy
 
-AXI-Stream
+Sliding window reuse
 
-AXI-Lite control interface
+Channel-wise tiling
 
-📂 Repository Structure
-cnn-accelerator-ip/
+Weight prefetch buffering
+
+Burst-friendly streaming
+
+Streaming Interface
+
+The accelerator uses AXI-Stream-compatible handshake signaling.
+
+Example Interface
+// Input Stream
+input  wire [7:0]  s_axis_tdata;
+input  wire        s_axis_tvalid;
+output wire        s_axis_tready;
+
+// Output Stream
+output wire [7:0]  m_axis_tdata;
+output wire        m_axis_tvalid;
+input  wire        m_axis_tready;
+
+Handshake follows standard ready/valid protocol.
+
+Repository Structure
+quantized-cnn-accelerator-ip/
 │
 ├── rtl/
-├── tb/
-├── synthesis/
+│   ├── cnn_accelerator.v
+│   ├── mac_array.v
+│   ├── line_buffer.v
+│   ├── quantizer.v
+│   └── activation_relu.v
+│
+├── sim/
+│   ├── tb_cnn_accelerator.v
+│   └── test_vectors/
+│
+├── synth/
+│   ├── yosys/
+│   └── nextpnr/
+│
 ├── docs/
-├── benchmarks/
-└── progress_logs/
-📅 1-Month Development Plan
+│   └── architecture.md
+│
+├── banner.svg
+├── LICENSE
+└── README.md
+1-Month Development Roadmap
 Week 1
 
-Implement MAC unit
+Define microarchitecture
 
-Implement accumulator
+Implement parameterized MAC array
 
-Testbench validation
+Implement sliding window line buffer
+
+Create simulation testbench
 
 Week 2
 
-Line buffer
+Integrate convolution pipeline
 
-Sliding window
+Implement INT32 accumulator
 
-Full pipeline integration
+Add activation + quantization
+
+Verify functional correctness
 
 Week 3
 
-Pipelining
+Integrate AXI-Stream interface
 
-ReLU
+Optimize BRAM usage
 
-Timing optimization
+Add synthesis scripts (Yosys)
+
+Run timing analysis
 
 Week 4
 
-Synthesis
+Hardware validation on FPGA board
 
-Frequency measurement
+Throughput benchmarking
 
-Resource utilization report
+Documentation finalization
 
-Benchmark publication
+FOSS release preparation
 
-🤝 Contribution
+Toolchain
 
-We welcome:
+This project supports open-source FPGA tooling.
 
-RTL optimizations
+Verilator (RTL simulation)
 
-Layer additions
+Yosys (Synthesis)
 
-Testbench improvements
+nextpnr (Place & Route)
 
-Documentation updates
+GTKWave (Waveform viewing)
 
-Please open an issue before major feature additions.
+Vendor tools (Vivado, Quartus, Radiant) may also be used but are not required.
 
-📜 License
+Contributing
 
-MIT License
+Contributions are welcome.
 
-⭐ Vision
+Please:
 
-To build a lightweight, high-performance, open-source CNN accelerator IP core enabling scalable Edge AI deployment on FPGA platforms.
+Fork the repository
 
-🔥 Why It Happened
+Create a feature branch
 
-It looked wrong because:
+Add simulation tests
 
-You pasted the outer ```markdown wrapper
+Ensure synthesis passes
 
-That forces GitHub to treat everything as code
+Submit a pull request
 
-Just paste normal markdown (like above) and it will render correctly.
+All contributions must maintain:
+
+Synthesizable RTL
+
+Vendor-neutral compatibility
+
+Clean timing closure
+
+Documented parameters
+
+License
+
+This project is licensed under the MIT License.
+
+See the LICENSE file for details.
+
+Vision
+
+The long-term vision of this project is to:
+
+Democratize hardware AI acceleration
+
+Enable fully open-source edge inference stacks
+
+Provide reusable FPGA CNN infrastructure
+
+Support academic, research, and industrial innovation
+
+Serve as a foundation for future open silicon initiatives
