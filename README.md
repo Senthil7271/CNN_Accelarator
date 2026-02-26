@@ -167,7 +167,7 @@ Vendor lock-in free.
 
 ## 📜 License
 
-MIT License
+Open-Source
 
 ## ⭐ Vision
 
