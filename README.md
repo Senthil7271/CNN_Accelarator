@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="banner.svg" alt="CNN Accelerator Banner"/>
+  <img src="assets/banner.svg" alt="CNN Accelerator Banner"/>
 </p>
 
 A vendor-agnostic, parameterized INT8 CNN accelerator IP core designed for FPGA-based edge AI inference.
