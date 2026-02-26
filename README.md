@@ -173,8 +173,3 @@ MIT License
 
 To build a scalable, lightweight, open-source CNN accelerator IP core enabling high-performance FPGA-based Edge AI deployment without vendor dependency.
 
-```
-
-Would you like me to generate a block diagram image for the **3×3 Parallel MAC Array** to include in your documentation?
-
-```
