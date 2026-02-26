@@ -1,4 +1,4 @@
-📌 Project Overview
+##📌 Project Overview
 
 This project implements a fully parameterized, vendor-agnostic CNN accelerator IP core optimized for INT8 3×3 convolution on 128×128 images.
 
