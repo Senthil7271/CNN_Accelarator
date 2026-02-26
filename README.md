@@ -1,13 +1,4 @@
-
-# 🔬⚡ Quantized CNN Accelerator IP for Edge AI
-
-<p align="center">
-  <img src="banner.svg" alt="Quantized CNN Accelerator IP"/>
-</p>
-
-<p align="center">
-  INT8 • 128×128 • 3×3 Convolution • FPGA • Edge AI
-</p>
+<p align="center">   <img src="assets/banner.svg" alt="CNN Accelerator Banner"/> </p>
 
 ## 📌 Project Overview
 
