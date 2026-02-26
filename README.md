@@ -1,4 +1,6 @@
-# 🚀 Open-Source Quantized CNN Accelerator IP for Edge AI
+<p align="center">
+  <img src="banner.svg" alt="CNN Accelerator Banner"/>
+</p>
 
 A vendor-agnostic, parameterized INT8 CNN accelerator IP core designed for FPGA-based edge AI inference.
 
