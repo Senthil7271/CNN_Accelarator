@@ -1,108 +1,113 @@
-##📌 Project Overview
+
+# 🔬⚡ Quantized CNN Accelerator IP for Edge AI
+
+<p align="center">
+  <img src="banner.svg" alt="Quantized CNN Accelerator IP"/>
+</p>
+
+<p align="center">
+  INT8 • 128×128 • 3×3 Convolution • FPGA • Edge AI
+</p>
+
+## 📌 Project Overview
 
 This project implements a fully parameterized, vendor-agnostic CNN accelerator IP core optimized for INT8 3×3 convolution on 128×128 images.
 
 The accelerator is written in Verilog RTL, designed for FPGA-based edge AI inference, and compatible with open-source FPGA toolchains.
 
-The design goal is to balance:
+## 🎯 Design Goals
 
-⚡ High throughput
+- ⚡ High throughput
+- 💾 Low resource utilization
+- 🧠 Quantized fixed-point inference
+- 🔓 Vendor independence
+- 🏭 Edge deployment readiness
 
-💾 Low resource utilization
+## 🎯 Objectives
 
-🧠 Quantized fixed-point inference
+- 🔧 Implement INT8 3×3 convolution accelerator
+- 📡 Support 128×128 streaming input
+- ⏱ Achieve 1 pixel per clock throughput
+- ♻ Provide reusable parameterized IP core
+- 🛠 Support open-source FPGA toolchain
+- 🔗 Enable easy SoC integration
 
-🔓 Vendor independence
+## 🏗 Accelerator Pipeline
 
-🏭 Edge deployment readiness
 
-🎯 Objectives
 
-Implement INT8 3×3 convolution accelerator
 
-Support 128×128 streaming input
+```
 
-Achieve 1 pixel per clock throughput
-
-Provide reusable parameterized IP core
-
-Support open-source FPGA toolchain
-
-Enable easy integration into SoC systems
-
-🏗 Accelerator Pipeline
 Input Stream
-        │
-        ▼
+↓
 Line Buffer (BRAM)
-        │
-        ▼
+↓
 Sliding Window Generator
-        │
-        ▼
+↓
 3×3 Parallel MAC Array
-        │
-        ▼
+↓
 INT32 Accumulator
-        │
-        ▼
+↓
 ReLU Activation
-        │
-        ▼
+↓
 Output Stream
-⚙️ Configuration Parameters
-parameter DATA_WIDTH     = 8;
-parameter WEIGHT_WIDTH   = 8;
-parameter ACC_WIDTH      = 32;
 
-parameter IMG_WIDTH      = 128;
-parameter IMG_HEIGHT     = 128;
+```
 
-parameter KERNEL_SIZE    = 3;
-parameter STRIDE         = 1;
-parameter PADDING        = 1;
+- ✔ Fully pipelined
+- ✔ Configurable parallelism
+- ✔ Resource-efficient design
 
-parameter IN_CHANNELS    = 1;
-parameter OUT_CHANNELS   = 4;
+## ⚙ Configuration Parameters
 
-parameter MAC_UNITS      = 9;  // 3×3 Fully Parallel
-🧮 Data Precision
-Component	Precision
-Input Feature Map	INT8
-Weights	INT8
-Accumulator	INT32
-Output	INT8 (Scaled)
+```verilog
+parameter DATA_WIDTH   = 8;
+parameter WEIGHT_WIDTH = 8;
+parameter ACC_WIDTH    = 32;
 
-Quantization uses fixed-point arithmetic with post-accumulation scaling.
+parameter IMG_WIDTH    = 128;
+parameter IMG_HEIGHT   = 128;
 
-📊 Performance Target
+parameter KERNEL_SIZE  = 3;
+parameter STRIDE       = 1;
+parameter PADDING      = 1;
+
+parameter IN_CHANNELS  = 1;
+parameter OUT_CHANNELS = 4;
+
+parameter MAC_UNITS    = 9;
+
+```
+
+## 🧮 Data Precision
+
+| Component | Precision |
+| --- | --- |
+| 📥 Input Feature Map | INT8 |
+| 🧮 Weights | INT8 |
+| ➕ Accumulator | INT32 |
+| 📤 Output | INT8 (Scaled) |
+
+## 📊 Performance Target
 
 For 128×128 input:
 
-Total Pixels: 16,384
+* 🧮 Total Pixels: 16,384
+* 🚀 Throughput: 1 Pixel per Clock
+* ⏱ At 100 MHz: ~163 µs per output channel
+* 📈 Estimated CPU Speedup: 20× – 200×
 
-At 100 MHz:
+## 💾 Memory Architecture
 
-Metric	Value
-Throughput	1 Pixel / Clock
-Latency (1 Channel)	~163 µs
-Estimated Speedup vs CPU	20× – 200×
-💾 Memory Architecture
+* 🧱 BRAM-based line buffers
+* 📦 BRAM weight storage
+* 🔄 Streaming feature map processing
+* 🔀 Channel-wise execution for scalability
 
-BRAM-based Line Buffers
+## 🔌 Interface
 
-BRAM Weight Storage
-
-Streaming Feature Map Processing
-
-Channel-wise execution for scalability
-
-Memory Requirements (Example):
-
-Component	Size
-Input (128×128×8-bit)	16 KB
-Output (4 channels)	64 KB
-🔌 Interface Specification
+```verilog
 input clk;
 input rst;
 
@@ -112,107 +117,73 @@ input [DATA_WIDTH-1:0] input_data;
 output output_valid;
 output [DATA_WIDTH-1:0] output_data;
 
-Future Extensions:
+```
 
-AXI-Stream Interface
+## 🔮 Future Extensions
 
-AXI-Lite Control Registers
+* AXI-Stream interface
+* AXI-Lite control registers
+* Multi-layer CNN chaining
 
-Multi-layer CNN chaining
+## 📁 Repository Structure
 
-🛠 Toolchain Compatibility
-Stage	Tool
-Simulation	Verilator
-Synthesis	Yosys
-Place & Route	nextpnr
-
-Fully compatible with open-source FPGA flow.
-
-📁 Repository Structure
+```
 cnn-accelerator-ip/
 │
-├── README.md
-│
 ├── rtl/
-│   ├── cnn_top.v
-│   ├── conv2d.v
-│   ├── mac_unit.v
-│   ├── line_buffer.v
-│   └── relu.v
-│
 ├── tb/
-│   └── tb_conv.v
-│
 ├── synthesis/
-│
 ├── docs/
-│
+├── benchmarks/
 └── progress_logs/
-📅 Development Roadmap (1 Month Plan)
-Week 1
 
-MAC Unit Implementation
+```
 
-Accumulator Design
+## 🗓 Development Roadmap
 
-Basic Testbench
+### 📅 Week 1
 
-Week 2
+* MAC unit
+* Accumulator
+* Basic testbench
 
-Line Buffer
+### 📅 Week 2
 
-Sliding Window Generator
+* Line buffer
+* Sliding window
+* Pipeline integration
 
-Pipeline Integration
+### 📅 Week 3
 
-Week 3
+* Timing optimization
+* ReLU integration
+* Resource analysis
 
-Timing Optimization
+### 📅 Week 4
 
-ReLU Integration
+* Full synthesis
+* Frequency measurement
+* Resource utilization report
+* Benchmark publication
 
-Resource Analysis
+## 🛠 Toolchain
 
-Week 4
+* 🧪 Verilator (Simulation)
+* 🔨 Yosys (Synthesis)
+* 📍 nextpnr (Place & Route)
 
-Full Synthesis
+Vendor lock-in free.
 
-Frequency Measurement
-
-LUT / BRAM / DSP Report
-
-Benchmark Publication
-
-⚡ Edge Optimization Strategies
-
-INT8 quantization
-
-Pipelined MAC architecture
-
-Parallel 3×3 convolution
-
-Streaming interface
-
-Channel-wise execution
-
-BRAM-based buffering
-
-📦 Deliverables
-
-Parameterized RTL code
-
-Testbench and simulation results
-
-Synthesis reports
-
-Performance benchmarks
-
-Weekly progress documentation
-
-📜 License
+## 📜 License
 
 MIT License
 
-⭐ Vision
+## ⭐ Vision
 
-To build a scalable, lightweight, open-source CNN accelerator IP core that enables high-performance FPGA-based Edge AI deployment without vendor lock-in.
+To build a scalable, lightweight, open-source CNN accelerator IP core enabling high-performance FPGA-based Edge AI deployment without vendor dependency.
+
+```
+
+Would you like me to generate a block diagram image for the **3×3 Parallel MAC Array** to include in your documentation?
+
+```
