@@ -2,108 +2,130 @@
   <img src="assets/banner.svg" alt="CNN Accelerator Banner"/>
 </p>
 
-A vendor-agnostic, parameterized INT8 CNN accelerator IP core designed for FPGA-based edge AI inference.
+---
 
-⚡ Target: 128×128 real-time convolution acceleration  
-🧠 Architecture: Pipelined 3×3 Quantized Convolution Engine  
-📦 Status: Active Development (Month 1 Roadmap)
+## 📌 Overview
+
+This project implements a fully parameterized, vendor-agnostic CNN accelerator IP core designed for FPGA-based Edge AI inference.
+
+The accelerator supports INT8 quantized 3×3 convolution optimized for 128×128 image processing using a pipelined MAC architecture.
+
+The goal is to provide a reusable, open-source hardware IP block that can be integrated into any FPGA platform without vendor lock-in.
 
 ---
 
-# 📌 Project Status
+## 🎯 Project Objectives
 
-🟡 Phase: Architecture & Base RTL Implementation  
-📅 Development Period: 1 Month  
-🔄 Weekly Progress Updates: Enabled  
-📢 Open for Contributors  
-
----
-
-# 🎯 Project Goals (Month 1)
-
-- [ ] Design clean parameterized RTL architecture  
-- [ ] Implement 3×3 INT8 Convolution Core  
-- [ ] Build Line Buffer + Sliding Window  
-- [ ] Add ReLU Activation  
-- [ ] Verify using testbench  
-- [ ] Achieve 1 pixel per clock (pipelined mode)  
-- [ ] Synthesize using open-source toolchain  
-- [ ] Publish benchmark results  
+- Develop reusable RTL for quantized convolution
+- Support 128×128 real-time inference
+- Achieve 1 pixel per clock throughput (pipelined mode)
+- Maintain vendor independence
+- Use open-source FPGA toolchains
+- Publish performance benchmarks
+- Maintain active weekly development logs
 
 ---
 
-# 🧠 Target Configuration (Development Version)
+## 🚧 Development Status
+
+Phase: Active Development  
+Timeline: 1 Month Structured Roadmap  
+Update Frequency: Weekly  
+
+---
+
+## 🏗 Architecture Overview
+
+The accelerator follows a streaming pipeline architecture:
+
+Input Stream  
+→ Line Buffer (BRAM)  
+→ Sliding Window Generator  
+→ 3×3 Parallel MAC Array  
+→ Accumulator (INT32)  
+→ ReLU Activation  
+→ Output Stream  
+
+The design is fully pipelined to maximize throughput.
+
+---
+
+## ⚙ Target Configuration (Current Development Build)
 
 ```verilog
 parameter DATA_WIDTH     = 8;
+parameter WEIGHT_WIDTH   = 8;
+parameter ACC_WIDTH      = 32;
+
 parameter IMG_WIDTH      = 128;
 parameter IMG_HEIGHT     = 128;
+
 parameter KERNEL_SIZE    = 3;
+parameter STRIDE         = 1;
+parameter PADDING        = 1;
+
 parameter IN_CHANNELS    = 1;
-parameter OUT_CHANNELS   = 4;   // Reduced for early testing
-parameter MAC_UNITS      = 9;
-🏗 Development Roadmap (4 Weeks Plan)
-📅 Week 1 – Architecture & Base Modules
+parameter OUT_CHANNELS   = 4;  // Reduced for initial testing
 
-Setup repository structure
+parameter MAC_UNITS      = 9;  // 3×3 fully parallel
+🧮 Data Precision
+Component	Precision
+Input Feature Map	INT8
+Weights	INT8
+Accumulator	INT32
+Output	INT8 (Scaled)
 
-Define top-level CNN module
+Fixed-point arithmetic is used throughout the pipeline.
 
-Implement:
+📊 Performance Target (128×128 Mode)
 
-MAC unit
+Total Pixels:
+128 × 128 = 16,384
 
-Accumulator
+Throughput Goal:
+1 Pixel per Clock (after pipeline fill)
 
-Write basic testbench
+At 100 MHz:
 
-Run simulation
+16,384 cycles ≈ 163.84 µs per output channel
 
-Deliverable:
-✔ Verified single 3×3 convolution block
+Expected speedup vs CPU:
+20× – 200×
 
-📅 Week 2 – Memory System
+💾 Memory Architecture
 
-Implement Line Buffer (BRAM-based)
+BRAM-based Line Buffers
 
-Build Sliding Window Generator
+Sliding Window Generator
 
-Integrate convolution pipeline
+BRAM Weight Storage
 
-Validate 128×128 streaming input
+Streaming Output Mode (recommended for smaller FPGAs)
 
-Deliverable:
-✔ Full convolution pipeline working in simulation
+Memory Usage (Single Channel Example):
 
-📅 Week 3 – Optimization & Pipelining
+Input:
+16 KB
 
-Add pipeline registers
+Output (4 channels):
+64 KB
 
-Achieve 1 pixel per clock
+🔌 Interface Specification
+Default Streaming Interface
+input clk;
+input rst;
 
-Add ReLU module
+input input_valid;
+input [DATA_WIDTH-1:0] input_data;
 
-Optimize resource utilization
+output output_valid;
+output [DATA_WIDTH-1:0] output_data;
 
-Deliverable:
-✔ Timing-stable RTL
+Future Enhancements:
 
-📅 Week 4 – Synthesis & Benchmarking
+AXI-Stream support
 
-Synthesize design
-
-Measure:
-
-LUT usage
-
-BRAM usage
-
-Maximum frequency
-
-Benchmark against CPU implementation
-
-Deliverable:
-✔ Performance report published
+AXI-Lite control registers
 
 📂 Repository Structure
 cnn-accelerator-ip/
@@ -125,62 +147,54 @@ cnn-accelerator-ip/
 ├── benchmarks/
 │
 └── progress_logs/
-🔄 Weekly Update Policy
+📅 1-Month Development Roadmap
+Week 1
 
-Each week includes:
+Define parameterized top module
 
-Code commits
+Implement MAC unit
 
-Simulation results
+Implement accumulator
 
-Resource utilization reports
+Create initial testbench
 
-Optimization improvements
+Validate single convolution block
 
-Bug fixes
+Week 2
 
-Progress will be documented inside:
+Implement line buffer
 
-progress_logs/Week-X-Progress.md
-📊 Target Performance
+Implement sliding window generator
 
-For 128×128 input:
+Integrate full convolution pipeline
 
-Pixels: 16,384
+Simulate 128×128 stream
 
-At 100 MHz:
+Week 3
 
-≈ 163 µs per output channel
+Add pipelining stages
 
-Expected Speedup vs CPU: 20× – 200×
+Optimize timing
 
-💾 Memory Strategy
+Add ReLU activation
 
-BRAM-based line buffers
+Resource usage review
 
-Sequential output channel processing
+Week 4
 
-Streaming interface (board-independent)
+Synthesis and place & route
 
-🔌 Interface (Initial Version)
-input clk;
-input rst;
+Frequency analysis
 
-input input_valid;
-input [7:0] input_data;
+LUT / BRAM / DSP usage measurement
 
-output output_valid;
-output [7:0] output_data;
+Benchmark vs CPU
 
-Future:
-
-AXI-Stream support
-
-AXI-Lite control interface
+Publish performance report
 
 🛠 Toolchain
 
-Open-source FPGA flow:
+Open-source FPGA flow recommended:
 
 Verilator (Simulation)
 
@@ -188,13 +202,13 @@ Yosys (Synthesis)
 
 nextpnr (Place & Route)
 
-Vendor lock-in free.
+No vendor lock-in.
 
 🔥 Long-Term Roadmap
 
-Multi-channel parallel support
+Multi-channel parallel execution
 
-Depthwise convolution
+Depthwise convolution support
 
 BatchNorm fusion
 
@@ -202,7 +216,7 @@ AXI-Lite control interface
 
 Full CNN layer chaining
 
-FPGA SoC integration
+SoC integration support
 
 🤝 Contribution Guidelines
 
@@ -210,13 +224,15 @@ We welcome:
 
 RTL optimizations
 
-Additional layer support
+New layer implementations
 
 Testbench improvements
 
-Documentation contributions
+Documentation updates
 
-Please open issues for feature requests or bug reports.
+Benchmark reports
+
+Please open an issue before major feature additions.
 
 📜 License
 
@@ -224,17 +240,31 @@ MIT License
 
 ⭐ Vision
 
-To build a reusable, open-source CNN accelerator IP core enabling high-performance Edge AI on FPGA platforms without vendor dependency.
+To build a lightweight, high-performance, open-source CNN accelerator IP core that enables scalable Edge AI deployment on FPGA platforms without vendor dependency.
 
+
+---
+
+This version is:
+
+- Clean
+- Professional
+- Industry-ready
+- FOSS compliant
+- Reviewer-friendly
+- Structured for 1-month tracking
 
 ---
 
 If you want, next I can give:
 
-- ✅ `CONTRIBUTING.md`
-- ✅ `LICENSE` file content
-- ✅ Week-1 progress template
-- ✅ Professional badges for top of README
-- ✅ GitHub project board setup guide
+- 🔥 CONTRIBUTING.md
+- 🔥 LICENSE file content
+- 🔥 GitHub badges (build, license, status)
+- 🔥 Professional abstract for FOSS submission
+- 🔥 Architecture diagram markdown section
+- 🔥 Benchmark report template
 
-Tell me what you want next 🔥
+Tell me what you want next.
+
+
