@@ -1,0 +1,75 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f2027"/>
+      <stop offset="50%" stop-color="#203a43"/>
+      <stop offset="100%" stop-color="#2c5364"/>
+    </linearGradient>
+
+    <!-- Title Gradient -->
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00F5A0"/>
+      <stop offset="100%" stop-color="#00D9F5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="300" fill="url(#bg)" />
+
+  <!-- Animated Title (Word by Word Loop) -->
+  <text x="50%" y="120" text-anchor="middle"
+        font-family="Segoe UI, Arial"
+        font-size="48"
+        font-weight="700"
+        fill="url(#titleGrad)">
+
+    <tspan opacity="0">
+      Quantized
+      <animate attributeName="opacity" values="0;1;1;0"
+               dur="6s" begin="0s" repeatCount="indefinite"/>
+    </tspan>
+
+    <tspan dx="15" opacity="0">
+      CNN
+      <animate attributeName="opacity" values="0;0;1;1;0"
+               dur="6s" begin="0s" repeatCount="indefinite"/>
+    </tspan>
+
+    <tspan dx="15" opacity="0">
+      Accelerator
+      <animate attributeName="opacity" values="0;0;0;1;1;0"
+               dur="6s" begin="0s" repeatCount="indefinite"/>
+    </tspan>
+
+    <tspan dx="15" opacity="0">
+      IP
+      <animate attributeName="opacity" values="0;0;0;0;1;1;0"
+               dur="6s" begin="0s" repeatCount="indefinite"/>
+    </tspan>
+
+  </text>
+
+  <!-- Moving Subtitle (Right to Left Loop) -->
+  <g>
+    <text y="190"
+          font-family="Segoe UI, Arial"
+          font-size="22"
+          fill="white"
+          opacity="0.85">
+
+      <animateTransform
+        attributeName="transform"
+        type="translate"
+        from="1200 0"
+        to="-1200 0"
+        dur="12s"
+        repeatCount="indefinite" />
+
+      Open-Source FPGA Core for Edge AI • 128×128 INT8 Convolution • Vendor-Agnostic • High Performance •
+
+    </text>
+  </g>
+
+</svg>
