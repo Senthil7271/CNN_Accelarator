@@ -1,73 +1,79 @@
-<svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+<svg width="1400" height="320" viewBox="0 0 1400 320" xmlns="http://www.w3.org/2000/svg">
 
   <defs>
-    <!-- Background Gradient -->
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0f2027"/>
-      <stop offset="50%" stop-color="#203a43"/>
-      <stop offset="100%" stop-color="#2c5364"/>
+    <!-- Animated Gradient for Title -->
+    <linearGradient id="titleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00F5A0">
+        <animate attributeName="stop-color"
+                 values="#00F5A0;#00D9F5;#A100FF;#00F5A0"
+                 dur="6s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#00D9F5">
+        <animate attributeName="stop-color"
+                 values="#00D9F5;#A100FF;#00F5A0;#00D9F5"
+                 dur="6s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
 
-    <!-- Title Gradient -->
-    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00F5A0"/>
-      <stop offset="100%" stop-color="#00D9F5"/>
+    <!-- Gradient for Subtitle -->
+    <linearGradient id="subtitleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF6A00"/>
+      <stop offset="50%" stop-color="#FFD500"/>
+      <stop offset="100%" stop-color="#FF006E"/>
     </linearGradient>
   </defs>
 
-  <!-- Background -->
-  <rect width="1200" height="300" fill="url(#bg)" />
-
-  <!-- Animated Title (Word by Word Loop) -->
-  <text x="50%" y="120" text-anchor="middle"
+  <!-- Animated Title (Word-by-Word Loop) -->
+  <text x="50%" y="130"
+        text-anchor="middle"
         font-family="Segoe UI, Arial"
-        font-size="48"
-        font-weight="700"
-        fill="url(#titleGrad)">
+        font-size="72"
+        font-weight="800"
+        fill="url(#titleGradient)">
 
     <tspan opacity="0">
       Quantized
       <animate attributeName="opacity" values="0;1;1;0"
-               dur="6s" begin="0s" repeatCount="indefinite"/>
+               dur="8s" repeatCount="indefinite"/>
     </tspan>
 
-    <tspan dx="15" opacity="0">
+    <tspan dx="20" opacity="0">
       CNN
       <animate attributeName="opacity" values="0;0;1;1;0"
-               dur="6s" begin="0s" repeatCount="indefinite"/>
+               dur="8s" repeatCount="indefinite"/>
     </tspan>
 
-    <tspan dx="15" opacity="0">
+    <tspan dx="20" opacity="0">
       Accelerator
       <animate attributeName="opacity" values="0;0;0;1;1;0"
-               dur="6s" begin="0s" repeatCount="indefinite"/>
+               dur="8s" repeatCount="indefinite"/>
     </tspan>
 
-    <tspan dx="15" opacity="0">
+    <tspan dx="20" opacity="0">
       IP
       <animate attributeName="opacity" values="0;0;0;0;1;1;0"
-               dur="6s" begin="0s" repeatCount="indefinite"/>
+               dur="8s" repeatCount="indefinite"/>
     </tspan>
 
   </text>
 
-  <!-- Moving Subtitle (Right to Left Loop) -->
+  <!-- Moving Subtitle -->
   <g>
-    <text y="190"
+    <text y="220"
           font-family="Segoe UI, Arial"
-          font-size="22"
-          fill="white"
-          opacity="0.85">
+          font-size="30"
+          font-weight="600"
+          fill="url(#subtitleGradient)">
 
       <animateTransform
         attributeName="transform"
         type="translate"
-        from="1200 0"
-        to="-1200 0"
-        dur="12s"
+        from="1400 0"
+        to="-1400 0"
+        dur="14s"
         repeatCount="indefinite" />
 
-      Open-Source FPGA Core for Edge AI • 128×128 INT8 Convolution • Vendor-Agnostic • High Performance •
+      Open-Source FPGA Core • 128×128 INT8 Convolution • Vendor-Agnostic • High-Performance Edge AI •
 
     </text>
   </g>
